@@ -1,73 +1,462 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-      integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <title>Chat Box</title>
-  </head>
-  <body>
-    <h1 class="title">Adamx 💬</h1>
-    <div class="main">
-      <div class="name">
-        <span><i class="far fa-user"></i></span>
-        <input
-          type="text"
-          id="name-input"
-          class="name-input"
-          value="anonymous"
-          maxlength="20"
-        />
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+    integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
+    crossorigin="anonymous"
+  />
 
-      <ul class="message-container" id="message-container">
-        <!-- These li elements are only for reference, and therefore, they are commented out... -->
-        <!-- <li class="message-left">
-          <p class="message">
-            lorem impsun
-            <span>bluebird ● 26 July 10:40</span>
-          </p>
-        </li>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-        <li class="message-right">
-          <p class="message">
-            lorem impsun
-            <span>bluebird ● 26 July 10:40</span>
-          </p>
-        </li>
+  <link rel="stylesheet" href="style.css" />
+  <title>Chat Box</title>
 
-        <li class="message-feedback">
-          <p class="feedback" id="feedback">✍️ killer is typing a message...</p>
-        </li> -->
-      </ul>
+  <style>
+    :root{
+      --bg1: #05070d;
+      --bg2: #090d16;
+      --card: rgba(14, 18, 28, 0.72);
+      --card-strong: rgba(18, 23, 35, 0.88);
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(0,255,156,0.20);
+      --text: #edf3ff;
+      --muted: #9aa7bd;
+      --accent: #00ff9c;
+      --accent2: #00d7ff;
+      --shadow: 0 24px 70px rgba(0,0,0,.55);
+      --glow: 0 0 35px rgba(0,255,156,.12);
+      --radius: 24px;
+    }
 
-      <form class="message-form" id="message-form">
-        <input
-          type="text"
-          name="message"
-          id="message-input"
-          class="message-input"
-        />
-        <div class="v-divider"></div>
-        <button type="submit" class="send-button">
-          send <span><i class="fas fa-paper-plane"></i></span>
-        </button>
-      </form>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      overflow:hidden;
+      color:var(--text);
+      font-family:'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(0,255,156,0.10), transparent 28%),
+        radial-gradient(circle at top right, rgba(0,215,255,0.10), transparent 24%),
+        radial-gradient(circle at bottom, rgba(255,255,255,0.04), transparent 30%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    body::before,
+    body::after{
+      content:"";
+      position:fixed;
+      inset:auto;
+      width:500px;
+      height:500px;
+      border-radius:50%;
+      filter: blur(55px);
+      opacity:.35;
+      z-index:-2;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+
+    body::before{
+      top:-120px;
+      left:-120px;
+      background: rgba(0,255,156,0.12);
+    }
+
+    body::after{
+      right:-120px;
+      bottom:-120px;
+      background: rgba(0,215,255,0.12);
+      animation-delay: -5s;
+    }
+
+    @keyframes drift{
+      from{ transform: translate3d(0,0,0) scale(1); }
+      to{ transform: translate3d(35px, 20px, 0) scale(1.08); }
+    }
+
+    .title{
+      font-family:'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 18px;
+      text-align:center;
+      color:#f6f9ff;
+      text-shadow: 0 0 18px rgba(0,255,156,.15);
+      animation: fadeUp .8s ease both;
+    }
+
+    .title span{
+      background: linear-gradient(90deg, #ffffff, var(--accent), var(--accent2));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      animation: sheen 6s linear infinite;
+      background-size: 200% 100%;
+    }
+
+    @keyframes sheen{
+      0%{ background-position: 0% 50%; }
+      100%{ background-position: 200% 50%; }
+    }
+
+    .main{
+      width:min(700px, 95%);
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow), var(--glow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transform: scale(0.95);
+      animation: cardIn .9s ease .1s both;
+    }
+
+    @keyframes cardIn{
+      from{ opacity:0; transform: translateY(24px) scale(.98); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    .name{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .name span{
+      color: var(--accent);
+      font-size: 1rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(0,255,156,0.08);
+      border: 1px solid rgba(0,255,156,0.15);
+      box-shadow: 0 0 18px rgba(0,255,156,0.08);
+      flex: 0 0 auto;
+    }
+
+    .name-input{
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-family:'JetBrains Mono', monospace;
+      font-size: .98rem;
+      letter-spacing: .02em;
+    }
+
+    .name-input::placeholder{
+      color:#73819a;
+    }
+
+    .message-container{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:16px;
+      height: 410;
+      overflow-y:auto;
+      overflow-x:hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,255,156,0.45) transparent;
+    }
+
+    .message-container::-webkit-scrollbar{
+      width:8px;
+    }
+
+    .message-container::-webkit-scrollbar-track{
+      background: transparent;
+    }
+
+    .message-container::-webkit-scrollbar-thumb{
+      background: linear-gradient(180deg, rgba(0,255,156,.5), rgba(0,215,255,.45));
+      border-radius:999px;
+    }
+
+    .message-left,
+    .message-right,
+    .message-feedback{
+      list-style:none;
+      max-width: 82%;
+      padding: 12px 14px;
+      border-radius: 18px;
+      animation: pop .22s ease both;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 25px rgba(0,0,0,.14);
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    @keyframes pop{
+      from{ opacity:0; transform: scale(.96) translateY(6px); }
+      to{ opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    .message-left{
+      align-self:flex-start;
+      background: rgba(255,255,255,0.05);
+      color:#dce5f3;
+      border-radius: 18px 18px 18px 6px;
+    }
+
+    .message-right{
+      align-self:flex-end;
+      background: linear-gradient(135deg, rgba(0,255,156,0.96), rgba(0,215,255,0.92));
+      color:#05110d;
+      font-weight: 600;
+      border-radius: 18px 18px 6px 18px;
+    }
+
+    .message{
+      font-size: .98rem;
+      line-height: 1.6;
+      font-family:'Inter', sans-serif;
+    }
+
+    .message span{
+      display:block;
+      margin-top:6px;
+      font-size: .75rem;
+      opacity:.8;
+      font-family:'JetBrains Mono', monospace;
+    }
+
+    .feedback{
+      font-style: italic;
+      color: #b6c3d6;
+      font-size: .92rem;
+      text-align:center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(255,255,255,0.08);
+    }
+
+    .message-form{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(9,12,20,0.80);
+    }
+
+    .message-input{
+      flex:1;
+      height:42px;
+      border:none;
+      outline:none;
+      border-radius: 16px;
+      padding: 0 14px;
+      font-size:  0.9rem;
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+
+    .message-input:focus{
+      border-color: rgba(0,255,156,0.28);
+      box-shadow: 0 0 0 4px rgba(0,255,156,0.08);
+      transform: translateY(-1px);
+    }
+
+    .v-divider{
+      width:1px;
+      height:32px;
+      background: rgba(255,255,255,0.10);
+      flex:0 0 auto;
+    }
+
+    .send-button{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      height:42px;
+      border:none;
+      outline:none;
+      padding:0 14px;
+      border-radius: 16px;
+      cursor:pointer;
+      font-family:'Space Grotesk', sans-serif;
+      font-weight:700;
+      font-size:0.8rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color:#04110d;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 12px 30px rgba(0,255,156,0.18);
+      transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+      position:relative;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+
+    .send-button::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.35) 50%, transparent 100%);
+      transform: translateX(-130%);
+    }
+
+    .send-button:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(0,255,156,0.22);
+      filter: saturate(1.05);
+    }
+
+    .send-button:hover::before{
+      animation: shine .8s ease;
+    }
+
+    @keyframes shine{
+      from{ transform: translateX(-130%); }
+      to{ transform: translateX(130%); }
+    }
+
+    .send-button span{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .clients-total{
+      margin-top: 18px;
+      font-family:'JetBrains Mono', monospace;
+      font-size: .92rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .03em;
+      animation: fadeUp .9s ease .2s both;
+    }
+
+    @keyframes fadeUp{
+      from{ opacity:0; transform: translateY(10px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px){
+      body{
+        padding: 16px;
+      }
+
+      .title{
+        margin-bottom: 14px;
+        font-size: 1.9rem;
+      }
+
+      .main{
+        width: 100%;
+        border-radius: 20px;
+      }
+
+      .message-container{
+        height: 340px;
+        padding: 12px;
+      }
+
+      .message-left,
+      .message-right{
+        max-width: 88%;
+      }
+
+      .message-form{
+        flex-wrap: wrap;
+      }
+
+      .v-divider{
+        display:none;
+      }
+
+      .send-button{
+        width:100%;
+        justify-content:center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="title"><span>ADAMX 💬</span></h1>
+
+  <div class="main">
+    <div class="name">
+      <span><i class="far fa-user"></i></span>
+      <input
+        type="text"
+        id="name-input"
+        class="name-input"
+        value="anonymous"
+        maxlength="20"
+      />
     </div>
-    <h3 class="clients-total" id="client-total">Total clients: 2</h3>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.28.0/moment.min.js"
-      integrity="sha512-Q1f3TS3vSt1jQ8AwP2OuenztnLU6LwxgyyYOG1jgMW/cbEMHps/3wjvnl1P3WTrF3chJUWEoxDUEjMxDV8pujg=="
-      crossorigin="anonymous"
-    ></script>
-    <script src="main.js"></script>
-  </body>
+    <ul class="message-container" id="message-container">
+      <!-- Example layout:
+      <li class="message-left">
+        <p class="message">
+          lorem ipsum
+          <span>bluebird ● 26 July 10:40</span>
+        </p>
+      </li>
+      -->
+    </ul>
+
+    <form class="message-form" id="message-form">
+      <input
+        type="text"
+        name="message"
+        id="message-input"
+        class="message-input"
+        placeholder="Type your message..."
+        autocomplete="off"
+      />
+      <div class="v-divider"></div>
+      <button type="submit" class="send-button">
+        send <span><i class="fas fa-paper-plane"></i></span>
+      </button>
+    </form>
+  </div>
+
+  <h3 class="clients-total" id="client-total">Total clients: 2</h3>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.28.0/moment.min.js"
+    integrity="sha512-Q1f3TS3vSt1jQ8AwP2OuenztnLU6LwxgyyYOG1jgMW/cbEMHps/3wjvnl1P3WTrF3chJUWEoxDUEjMxDV8pujg=="
+    crossorigin="anonymous"
+  ></script>
+  <script src="main.js"></script>
+</body>
 </html>
