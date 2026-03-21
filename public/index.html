@@ -382,10 +382,15 @@
         width: 100%;
         border-radius: 20px;
         margin-top: 2px;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px);
       }
 
       .message-container{
-        height: 530px;
+        flex: 1;        
+        overflow-y: auto;
+        height: auto;   
         padding: 8px;
         gap: 6px;
       }
@@ -403,10 +408,11 @@
         display:none;
       }
       
-     #client-total {
-        margin-top: 8px;
+     .clients-total {
+        margin-top: 6px;
         font-size: 0.85rem;
-     }
+        text-align: center;
+      }
        
       .send-button{
         width:100%;
